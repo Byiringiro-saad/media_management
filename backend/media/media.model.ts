@@ -1,5 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 
+//interface
+import Media from "./media.interface";
+
 const mediaSchema: Schema = new mongoose.Schema({
   title: {
     type: String,
@@ -24,4 +27,4 @@ const mediaSchema: Schema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("Media", mediaSchema);
+export default mongoose.model<Media & mongoose.Document>("Media", mediaSchema);
