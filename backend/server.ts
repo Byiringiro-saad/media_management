@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //endpoints
-app.use("/api/user", userRoutes);
-app.use("/api/media", mediaRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/medias", mediaRoutes);
 
 export default app;

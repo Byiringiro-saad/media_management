@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteMedia = exports.updateMedia = exports.getAllMedia = exports.getMedia = exports.newMedia = void 0;
+exports.deleteMedia = exports.updateMedia = exports.getAllMedias = exports.getMedia = exports.newMedia = void 0;
 //new media
 const newMedia = (req, res) => { };
 exports.newMedia = newMedia;
@@ -8,8 +8,8 @@ exports.newMedia = newMedia;
 const getMedia = (req, res) => { };
 exports.getMedia = getMedia;
 //get all media
-const getAllMedia = (req, res) => { };
-exports.getAllMedia = getAllMedia;
+const getAllMedias = (req, res) => { };
+exports.getAllMedias = getAllMedias;
 //update media
 const updateMedia = (req, res) => { };
 exports.updateMedia = updateMedia;

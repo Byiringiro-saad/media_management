@@ -7,7 +7,7 @@ export const newMedia = (req: Request, res: Response) => {};
 export const getMedia = (req: Request, res: Response) => {};
 
 //get all media
-export const getAllMedia = (req: Request, res: Response) => {};
+export const getAllMedias = (req: Request, res: Response) => {};
 
 //update media
 export const updateMedia = (req: Request, res: Response) => {};

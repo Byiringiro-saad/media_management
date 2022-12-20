@@ -17,6 +17,6 @@ app.use((0, morgan_1.default)("dev"));
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 //endpoints
-app.use("/api/user", user_routes_1.default);
-app.use("/api/media", media_routes_1.default);
+app.use("/api/users", user_routes_1.default);
+app.use("/api/medias", media_routes_1.default);
 exports.default = app;
