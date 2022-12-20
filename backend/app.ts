@@ -1,12 +1,57 @@
 import dotenv from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
+import bodyParser from "body-parser";
 
-import app from "./server";
+//files
+import Controller from "./interfaces/controller.interface";
+import errorMiddleware from "./middlewares/error.middleware";
 
-//configs
-dotenv.config();
+class App {
+  public app: express.Application;
 
-const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+  constructor(controllers: Controller[]) {
+    this.app = express();
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+    dotenv.config();
+
+    //initializing
+    this.connectToDatabase();
+    this.initializeMiddlewares();
+    this.initializeErrorHandling();
+    this.initializeControllers(controllers);
+  }
+
+  //listen to port
+  public listen() {
+    this.app.listen(process.env.PORT, () => {
+      console.log(`App listening on the port ${process.env.PORT}`);
+    });
+  }
+
+  //initialise middlewares
+  private initializeMiddlewares() {
+    this.app.use(bodyParser.json());
+  }
+
+  //initialise error handler
+  private initializeErrorHandling() {
+    this.app.use(errorMiddleware);
+  }
+
+  //initialise controllers
+  private initializeControllers(controllers: Controller[]) {
+    controllers.forEach((controller) => {
+      this.app.use("/", controller.router);
+    });
+  }
+
+  //connect to database
+  private connectToDatabase() {
+    mongoose.connect(`${process.env.MONGO_URI}`, {}).then(() => {
+      console.log("Connected to database");
+    });
+  }
+}
+
+export default App;
