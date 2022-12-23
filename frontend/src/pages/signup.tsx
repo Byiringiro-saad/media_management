@@ -1,12 +1,12 @@
 import { FC, useState } from "react";
 import styled from "styled-components";
-import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 
 //icons
-import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
+import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 
 //layouts
 import AuthLayout from "../layouts/auth";
