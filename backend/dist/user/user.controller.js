@@ -39,6 +39,20 @@ class UserController {
                 if (!user) {
                     throw new Error("User does not exist");
                 }
+                //check usedGoogle
+                if (data.usedGoogle) {
+                    if (!user.usedGoogle) {
+                        throw new Error("You did not sign up using Google");
+                    }
+                    else {
+                        //create token
+                        const token = jsonwebtoken_1.default.sign({ id: user._id }, "Secret", {
+                            expiresIn: "1h",
+                        });
+                        //send response
+                        return res.status(200).json({ token });
+                    }
+                }
                 //check if password is correct
                 const isPasswordCorrect = yield bcryptjs_1.default.compare(data.password, user.password);
                 if (!isPasswordCorrect) {
@@ -74,6 +88,22 @@ class UserController {
                 if (user) {
                     throw new Error("User already exists");
                 }
+                //check usedGoogle
+                if (data.usedGoogle) {
+                    //create new user
+                    const newUser = new user_model_1.default({
+                        name: data.name,
+                        email: data.email,
+                        usedGoogle: data.usedGoogle,
+                    });
+                    yield newUser.save();
+                    //create signin token
+                    const token = jsonwebtoken_1.default.sign({ email: data === null || data === void 0 ? void 0 : data.email }, "secret", {
+                        expiresIn: "1h",
+                    });
+                    //send response
+                    return res.status(200).send({ token });
+                }
                 //create new user
                 const hashedPassword = yield bcryptjs_1.default.hash(data.password, 10);
                 const newUser = new user_model_1.default({
@@ -104,13 +134,13 @@ class UserController {
         this.validateSignup = joi_1.default.object({
             name: joi_1.default.string().min(3).max(255).required(),
             email: joi_1.default.string().email().required(),
-            password: joi_1.default.string().min(3).max(10).required(),
+            password: joi_1.default.string(),
             usedGoogle: joi_1.default.boolean().required(),
         });
         //verify login inputs
         this.validateLogin = joi_1.default.object({
             email: joi_1.default.string().email().required(),
-            password: joi_1.default.string().min(3).max(10).required(),
+            password: joi_1.default.string(),
             usedGoogle: joi_1.default.boolean().required(),
         });
         this.initializeRoutes();

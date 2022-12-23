@@ -14,7 +14,6 @@ const userSchema: Schema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
   },
   medias: {
     type: [mongoose.Schema.Types.ObjectId],

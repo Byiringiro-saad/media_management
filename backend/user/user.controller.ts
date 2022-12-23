@@ -44,6 +44,21 @@ class UserController implements Controller {
         throw new Error("User does not exist");
       }
 
+      //check usedGoogle
+      if (data.usedGoogle) {
+        if (!user.usedGoogle) {
+          throw new Error("You did not sign up using Google");
+        } else {
+          //create token
+          const token = jwt.sign({ id: user._id }, "Secret", {
+            expiresIn: "1h",
+          });
+
+          //send response
+          return res.status(200).json({ token });
+        }
+      }
+
       //check if password is correct
       const isPasswordCorrect = await bcrypt.compare(
         data.password,
@@ -87,6 +102,26 @@ class UserController implements Controller {
         throw new Error("User already exists");
       }
 
+      //check usedGoogle
+      if (data.usedGoogle) {
+        //create new user
+        const newUser = new userModel({
+          name: data.name,
+          email: data.email,
+          usedGoogle: data.usedGoogle,
+        });
+
+        await newUser.save();
+
+        //create signin token
+        const token = jwt.sign({ email: data?.email }, "secret", {
+          expiresIn: "1h",
+        });
+
+        //send response
+        return res.status(200).send({ token });
+      }
+
       //create new user
       const hashedPassword = await bcrypt.hash(data.password, 10);
       const newUser = new userModel({
@@ -122,14 +157,14 @@ class UserController implements Controller {
   private validateSignup = Joi.object({
     name: Joi.string().min(3).max(255).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().min(3).max(10).required(),
+    password: Joi.string(),
     usedGoogle: Joi.boolean().required(),
   });
 
   //verify login inputs
   private validateLogin = Joi.object({
     email: Joi.string().email().required(),
-    password: Joi.string().min(3).max(10).required(),
+    password: Joi.string(),
     usedGoogle: Joi.boolean().required(),
   });
 }
