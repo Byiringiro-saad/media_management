@@ -48,7 +48,8 @@ class App {
 
   //connect to database
   private connectToDatabase() {
-    mongoose.connect(`${process.env.MONGO_URI}`, {}).then(() => {
+    mongoose.set("strictQuery", false);
+    mongoose.connect(`mongodb://127.0.0.1:27017/SaadMedius`, {}).then(() => {
       console.log("Connected to database");
     });
   }
