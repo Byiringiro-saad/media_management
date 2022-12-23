@@ -1,11 +1,11 @@
-import { FC } from "react";
+import * as React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 //pages
 import Index from "./pages";
 import Login from "./pages/login";
 
-const App: FC = () => {
+const App: React.FC = () => {
   return (
     <Router>
       <Routes>

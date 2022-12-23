@@ -1,11 +1,11 @@
-import { FC } from "react";
+import * as React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 //files
 import logo from "../assets/logo.jpg";
 
-const Index: FC = () => {
+const Index: React.FC = () => {
   return (
     <Container>
       <p className="header">Welcome to SaadMedius</p>
