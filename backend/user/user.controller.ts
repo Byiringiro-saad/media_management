@@ -174,7 +174,54 @@ class UserController implements Controller {
   };
 
   //update user
-  private updateUser = async (req: Request, res: Response) => {};
+  private updateUser = async (req: Request, res: Response) => {
+    const data = {
+      id: req.params.id,
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+    };
+
+    try {
+      //check if user exists
+      const user = await userModel.findById(data.id);
+      if (!user) {
+        throw new Error("User does not exist");
+      }
+
+      //check if email already exists
+      const emailExists = await userModel.findOne({ email: data.email });
+      if (emailExists) {
+        throw new Error("Email already exists");
+      }
+
+      //update user
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      const updatedUser = await userModel.findByIdAndUpdate(
+        data.id,
+        {
+          name: data.name,
+          email: data.email,
+          password: hashedPassword,
+        },
+        { new: true }
+      );
+
+      //send response
+      res.status(200).json({
+        user: {
+          name: updatedUser?.name,
+          email: updatedUser?.email,
+          password: data?.password,
+        },
+      });
+    } catch (error: Error | any) {
+      res.status(400).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  };
 
   //delete user
   private deleteUser = async (req: Request, res: Response) => {};

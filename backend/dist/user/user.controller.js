@@ -152,7 +152,47 @@ class UserController {
             }
         });
         //update user
-        this.updateUser = (req, res) => __awaiter(this, void 0, void 0, function* () { });
+        this.updateUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const data = {
+                id: req.params.id,
+                name: req.body.name,
+                email: req.body.email,
+                password: req.body.password,
+            };
+            try {
+                //check if user exists
+                const user = yield user_model_1.default.findById(data.id);
+                if (!user) {
+                    throw new Error("User does not exist");
+                }
+                //check if email already exists
+                const emailExists = yield user_model_1.default.findOne({ email: data.email });
+                if (emailExists) {
+                    throw new Error("Email already exists");
+                }
+                //update user
+                const hashedPassword = yield bcryptjs_1.default.hash(data.password, 10);
+                const updatedUser = yield user_model_1.default.findByIdAndUpdate(data.id, {
+                    name: data.name,
+                    email: data.email,
+                    password: hashedPassword,
+                }, { new: true });
+                //send response
+                res.status(200).json({
+                    user: {
+                        name: updatedUser === null || updatedUser === void 0 ? void 0 : updatedUser.name,
+                        email: updatedUser === null || updatedUser === void 0 ? void 0 : updatedUser.email,
+                        password: data === null || data === void 0 ? void 0 : data.password,
+                    },
+                });
+            }
+            catch (error) {
+                res.status(400).json({
+                    status: "error",
+                    message: error.message,
+                });
+            }
+        });
         //delete user
         this.deleteUser = (req, res) => __awaiter(this, void 0, void 0, function* () { });
         //verify signup inputs
