@@ -131,7 +131,26 @@ class UserController {
             }
         });
         //get user
-        this.getUser = (req, res) => __awaiter(this, void 0, void 0, function* () { });
+        this.getUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const data = {
+                id: req.params.id,
+            };
+            try {
+                //check if user exists
+                const user = yield user_model_1.default.findById(data.id);
+                if (!user) {
+                    throw new Error("User does not exist");
+                }
+                //send response
+                res.status(200).json({ user });
+            }
+            catch (error) {
+                res.status(400).json({
+                    status: "error",
+                    message: error.message,
+                });
+            }
+        });
         //update user
         this.updateUser = (req, res) => __awaiter(this, void 0, void 0, function* () { });
         //delete user

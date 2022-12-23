@@ -151,7 +151,27 @@ class UserController implements Controller {
   };
 
   //get user
-  private getUser = async (req: Request, res: Response) => {};
+  private getUser = async (req: Request, res: Response) => {
+    const data = {
+      id: req.params.id,
+    };
+
+    try {
+      //check if user exists
+      const user = await userModel.findById(data.id);
+      if (!user) {
+        throw new Error("User does not exist");
+      }
+
+      //send response
+      res.status(200).json({ user });
+    } catch (error: Error | any) {
+      res.status(400).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  };
 
   //update user
   private updateUser = async (req: Request, res: Response) => {};
