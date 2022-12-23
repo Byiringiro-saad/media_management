@@ -1,11 +1,12 @@
+import cors from "cors";
 import dotenv from "dotenv";
+import morgan from "morgan";
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 
 //files
 import Controller from "./interfaces/controller.interface";
-import errorMiddleware from "./middlewares/error.middleware";
 
 class App {
   public app: express.Application;
@@ -18,7 +19,6 @@ class App {
     //initializing
     this.connectToDatabase();
     this.initializeMiddlewares();
-    this.initializeErrorHandling();
     this.initializeControllers(controllers);
   }
 
@@ -31,12 +31,9 @@ class App {
 
   //initialise middlewares
   private initializeMiddlewares() {
+    this.app.use(cors());
+    this.app.use(morgan("dev"));
     this.app.use(bodyParser.json());
-  }
-
-  //initialise error handler
-  private initializeErrorHandling() {
-    this.app.use(errorMiddleware);
   }
 
   //initialise controllers

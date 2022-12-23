@@ -1,6 +1,8 @@
 import { FC, useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
 
 //icons
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
@@ -9,28 +11,126 @@ import { FcGoogle } from "react-icons/fc";
 //layouts
 import AuthLayout from "../layouts/auth";
 
+//files
+import loader from "../assets/loader.svg";
+import axiosInstance from "../features/axios";
+
 const Signup: FC = () => {
+  //configs
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  //local data
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  //handle show password
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  //submit
+  const onSubmit = (data: any) => {
+    setLoading(true);
+    axiosInstance
+      .post("/users/signup", {
+        name: data.name,
+        usedGoogle: false,
+        email: data.email,
+        password: data.password,
+      })
+      .then((res) => {
+        setLoading(false);
+        sessionStorage.setItem("token", res.data.token);
+        navigate("/home");
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast(`${err.response.data.message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          theme: "dark",
+        });
+      });
   };
 
   return (
     <AuthLayout>
       <Container>
         <p className="header">You will love SaadMedius</p>
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row">
-            <input type="text" placeholder="Names" />
+            <input
+              type="text"
+              placeholder="Names"
+              {...register("name", {
+                required: true,
+                minLength: 3,
+                maxLength: 255,
+              })}
+            />
           </div>
+          {
+            //errors
+            errors.name?.type === "required" && (
+              <p className="error">Name is required</p>
+            )
+          }
+          {
+            //errors
+            errors.name?.type === "minLength" && (
+              <p className="error">Name must be at least 3 characters</p>
+            )
+          }
+          {
+            //errors
+            errors.name?.type === "maxLength" && (
+              <p className="error">Name must be at most 255 characters</p>
+            )
+          }
           <div className="row">
-            <input type="text" placeholder="Email" />
+            <input
+              type="text"
+              placeholder="Email"
+              {...register("email", {
+                required: true,
+                minLength: 10,
+                maxLength: 255,
+              })}
+            />
           </div>
+          {
+            //errors
+            errors.email?.type === "required" && (
+              <p className="error">Email is required</p>
+            )
+          }
+          {
+            //errors
+            errors.email?.type === "minLength" && (
+              <p className="error">Email must be at least 10 characters</p>
+            )
+          }
+          {
+            //errors
+            errors.email?.type === "maxLength" && (
+              <p className="error">Email must be at most 255 characters</p>
+            )
+          }
           <div className="row">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
+              {...register("password", {
+                required: true,
+                minLength: 6,
+                maxLength: 255,
+              })}
             />
             {showPassword ? (
               <AiFillEyeInvisible
@@ -41,8 +141,28 @@ const Signup: FC = () => {
               <AiFillEye onClick={handleShowPassword} className="icon" />
             )}
           </div>
+          {
+            //errors
+            errors.password?.type === "required" && (
+              <p className="error">Password is required</p>
+            )
+          }
+          {
+            //errors
+            errors.password?.type === "minLength" && (
+              <p className="error">Password must be at least 6 characters</p>
+            )
+          }
+          {
+            //errors
+            errors.password?.type === "maxLength" && (
+              <p className="error">Password must be at most 255 characters</p>
+            )
+          }
           <div className="row">
-            <button type="submit">Signup</button>
+            <button type="submit">
+              {loading ? <img src={loader} alt="loader" /> : "Signup"}
+            </button>
           </div>
           <div className="row">
             <FcGoogle className="big" />
@@ -84,7 +204,7 @@ const Container = styled.div`
     .row {
       width: 350px;
       height: 45px;
-      margin: 0 0 15px 0;
+      margin: 0 0 10px 0;
       border-radius: 5px;
       overflow: hidden;
       display: flex;
@@ -123,6 +243,10 @@ const Container = styled.div`
         outline: none;
         color: var(--white);
         background: var(--bright);
+
+        img {
+          width: 50px;
+        }
       }
 
       .icon {
@@ -138,6 +262,11 @@ const Container = styled.div`
           background: var(--dark);
         }
       }
+    }
+
+    p.error {
+      margin: 5px 0 15px 0;
+      color: var(--red);
     }
   }
 

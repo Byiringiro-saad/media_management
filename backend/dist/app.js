@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const morgan_1 = __importDefault(require("morgan"));
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const error_middleware_1 = __importDefault(require("./middlewares/error.middleware"));
 class App {
     constructor(controllers) {
         this.app = (0, express_1.default)();
@@ -15,7 +16,6 @@ class App {
         //initializing
         this.connectToDatabase();
         this.initializeMiddlewares();
-        this.initializeErrorHandling();
         this.initializeControllers(controllers);
     }
     //listen to port
@@ -26,11 +26,9 @@ class App {
     }
     //initialise middlewares
     initializeMiddlewares() {
+        this.app.use((0, cors_1.default)());
+        this.app.use((0, morgan_1.default)("dev"));
         this.app.use(body_parser_1.default.json());
-    }
-    //initialise error handler
-    initializeErrorHandling() {
-        this.app.use(error_middleware_1.default);
     }
     //initialise controllers
     initializeControllers(controllers) {

@@ -76,7 +76,10 @@ class UserController implements Controller {
       //send response
       res.status(200).json({ token });
     } catch (error: Error | any) {
-      res.status(400).json({ message: error.message });
+      res.status(400).json({
+        status: "error",
+        message: error.message,
+      });
     }
   };
 
@@ -140,7 +143,10 @@ class UserController implements Controller {
       //send response
       return res.status(200).send({ token });
     } catch (error: Error | any) {
-      return res.status(400).send(error.message);
+      return res.status(400).json({
+        status: "error",
+        message: error.message,
+      });
     }
   };
 
