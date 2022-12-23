@@ -9,7 +9,7 @@ import { FcGoogle } from "react-icons/fc";
 //layouts
 import AuthLayout from "../layouts/auth";
 
-const Login: FC = () => {
+const Signup: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleShowPassword = () => {
@@ -19,8 +19,11 @@ const Login: FC = () => {
   return (
     <AuthLayout>
       <Container>
-        <p className="header">Welcome to SaadMedius</p>
+        <p className="header">You will love SaadMedius</p>
         <form>
+          <div className="row">
+            <input type="text" placeholder="Names" />
+          </div>
           <div className="row">
             <input type="text" placeholder="Email" />
           </div>
@@ -39,15 +42,15 @@ const Login: FC = () => {
             )}
           </div>
           <div className="row">
-            <button type="submit">Login</button>
+            <button type="submit">Signup</button>
           </div>
           <div className="row">
             <FcGoogle className="big" />
-            <p>Login with Google</p>
+            <p>Signup with Google</p>
           </div>
         </form>
         <p className="signup">
-          Don't have an account? <Link to="/signup">Signup</Link>
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </Container>
     </AuthLayout>
@@ -151,4 +154,4 @@ const Container = styled.div`
   }
 `;
 
-export default Login;
+export default Signup;
