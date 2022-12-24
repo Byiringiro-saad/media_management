@@ -24,7 +24,7 @@ const MediasContainer: FC<Props> = ({ data }) => {
 const Container = styled.div`
   width: 80%;
   height: auto;
-  margin: 20px;
+  padding: 20px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px;

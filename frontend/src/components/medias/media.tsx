@@ -1,5 +1,11 @@
 import * as React from "react";
+import { motion } from "framer-motion";
 import styled from "styled-components";
+import { useNavigate } from "react-router";
+
+//icons
+import { HiDownload } from "react-icons/hi";
+import { BiChevronsUp } from "react-icons/bi";
 
 //files
 import { Media as MInterface } from "../../features/interfaces";
@@ -9,9 +15,42 @@ type Props = {
 };
 
 const Media: React.FC<Props> = ({ media }) => {
+  //configs
+  const navigate = useNavigate();
+
+  //animations
+  const hover = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+      },
+    },
+  };
+
+  const goToMedia = () => {
+    navigate(`/home/${media?._id}`);
+  };
+
   return (
-    <Container>
+    <Container onClick={goToMedia}>
       <div className="media">
+        <motion.div
+          className="hover"
+          variants={hover}
+          initial="hidden"
+          whileHover="visible"
+        >
+          <div className="one">
+            <BiChevronsUp className="icon" />
+          </div>
+          <div className="one">
+            <HiDownload className="icon" />
+          </div>
+        </motion.div>
         <div className="upvotes">
           <p>{media?.upvotes?.length} Upvotes</p>
         </div>
@@ -43,8 +82,42 @@ const Container = styled.div`
     overflow: hidden;
     position: relative;
 
+    .hover {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #070b1087;
+
+      .one {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 0;
+        border-radius: 50%;
+        background: var(--dark);
+        cursor: pointer;
+
+        :hover {
+          background: var(--gray);
+        }
+
+        .icon {
+          font-size: 1.5em;
+          color: var(--white);
+        }
+      }
+    }
+
     .upvotes {
-      width: 40%;
+      width: 50%;
       height: 30px;
       background: var(--dark);
       display: flex;
