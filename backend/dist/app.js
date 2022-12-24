@@ -29,6 +29,7 @@ class App {
         this.app.use((0, cors_1.default)());
         this.app.use((0, morgan_1.default)("dev"));
         this.app.use(body_parser_1.default.json());
+        this.app.use(body_parser_1.default.urlencoded({ extended: false }));
     }
     //initialise controllers
     initializeControllers(controllers) {

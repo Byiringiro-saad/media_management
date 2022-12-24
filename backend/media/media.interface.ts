@@ -1,9 +1,11 @@
 interface Media {
   id: number;
   title: string;
+  status: string;
+  cloudinaryId: string;
   url: string;
   type: string;
-  upvotes: number;
+  upvotes: [string];
   user: string;
 }
 

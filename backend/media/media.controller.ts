@@ -1,38 +1,313 @@
+import path from "path";
+import multer from "multer";
+import { v2 } from "cloudinary";
 import { Request, Response, Router } from "express";
 
 //files
+import mediaModel from "./media.model";
+import userModel from "../user/user.model";
 import Controller from "../interfaces/controller.interface";
 
 class MediaController implements Controller {
   public path = "/medias";
   public router = Router();
+  public upload: any;
+  public cloudinary = v2;
 
   constructor() {
+    this.initializeCloudinary();
+    this.initializeMulter();
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
     this.router.get(`${this.path}/:id`, this.getMedia);
     this.router.get(`${this.path}/`, this.getAllMedias);
-    this.router.post(`${this.path}/`, this.createMedia);
+    this.router.post(
+      `${this.path}/create`,
+      this.upload.single("file"),
+      this.createMedia
+    );
     this.router.put(`${this.path}/:id`, this.updateMedia);
     this.router.delete(`${this.path}/:id`, this.deleteMedia);
+    this.router.put(`${this.path}/upvote/:id`, this.upvoteMedia);
+    this.router.put(`${this.path}/public/:id`, this.turnIntoPublic);
+    this.router.put(`${this.path}/private/:id`, this.turnIntoPrivate);
+  }
+
+  //initialize cloudinary
+  private initializeCloudinary() {
+    v2.config({
+      cloud_name: "f-studios",
+      api_key: "171115551123521",
+      api_secret: "456kdAZpyL7uvH2af_uQrX9I8rA",
+    });
+
+    this.cloudinary = v2;
+  }
+
+  //initialize multer
+  private initializeMulter() {
+    const storage = multer.diskStorage({});
+    const fileFilter = (_req: any, file: any, cb: any) => {
+      let ext = path.extname(file.originalname);
+      if (ext !== ".jpg" && ext !== ".jpeg" && ext !== ".png") {
+        cb(new Error("Unsupported file type!"), false);
+        return;
+      }
+      cb(null, true);
+    };
+
+    this.upload = multer({ storage: storage, fileFilter: fileFilter });
   }
 
   //new media
-  private createMedia = async (req: Request, res: Response) => {};
+  private createMedia = async (req: any, res: Response) => {
+    const data = {
+      title: req.body.title,
+      status: req.body.status,
+      type: req.body.type,
+      user: req.body.user,
+    };
+
+    try {
+      //check user
+      const user = await userModel.findById(data.user);
+      if (!user) {
+        res.status(404).json({ message: "User not found!" });
+        return;
+      }
+
+      //upload to cloudinary
+      const result = await this.cloudinary.uploader.upload(req.file.path, {
+        folder: "Temp/SaadMedius",
+      });
+
+      //save to database
+      const media = new mediaModel({
+        ...data,
+        url: result.secure_url,
+        cloudinaryId: result.public_id,
+      });
+      const newMedia = await media.save();
+
+      //update user
+      await userModel.findByIdAndUpdate(data.user, {
+        $push: { medias: media?._id },
+      });
+
+      // send response
+      res.status(201).json({ message: "Media created!", media: newMedia });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong!",
+        error: error,
+      });
+    }
+  };
 
   //get media
-  private getMedia = async (req: Request, res: Response) => {};
+  private getMedia = async (req: Request, res: Response) => {
+    const data = {
+      id: req.params.id,
+    };
 
-  //get all media
-  private getAllMedias = async (req: Request, res: Response) => {};
+    try {
+      const media = await mediaModel.findById(data.id);
+      if (!media) {
+        res.status(404).json({ message: "Media not found!" });
+        return;
+      }
+
+      res.status(200).json({ message: "Media found!", media: media });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong!",
+        error: error,
+      });
+    }
+  };
+
+  //get all media (public)
+  private getAllMedias = async (req: Request, res: Response) => {
+    try {
+      const medias = await mediaModel.find({ status: "public" });
+      if (!medias) {
+        res.status(404).json({ message: "Medias not found!" });
+        return;
+      }
+
+      res.status(200).json({ message: "Medias found!", medias: medias });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong!",
+        error: error,
+      });
+    }
+  };
+
+  //turn media to public
+  private turnIntoPublic = async (req: Request, res: Response) => {
+    const data = {
+      id: req.params.id,
+    };
+
+    try {
+      const media = await mediaModel.findById(data.id);
+      if (!media) {
+        res.status(404).json({ message: "Media not found!" });
+        return;
+      }
+
+      //update media
+      const updatedMedia = await mediaModel.findByIdAndUpdate(data.id, {
+        status: "public",
+      });
+
+      res.status(200).json({ message: "Media updated!" });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong!",
+        error: error,
+      });
+    }
+  };
+
+  //turn media to private
+  private turnIntoPrivate = async (req: Request, res: Response) => {
+    const data = {
+      id: req.params.id,
+    };
+
+    try {
+      const media = await mediaModel.findById(data.id);
+      if (!media) {
+        res.status(404).json({ message: "Media not found!" });
+        return;
+      }
+
+      //update media
+      const updatedMedia = await mediaModel.findByIdAndUpdate(
+        data.id,
+        {
+          status: "private",
+        },
+        {
+          new: true,
+        }
+      );
+
+      res.status(200).json({ message: "Media updated!" });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong!",
+        error: error,
+      });
+    }
+  };
 
   //update media
-  private updateMedia = async (req: Request, res: Response) => {};
+  private updateMedia = async (req: Request, res: Response) => {
+    const data = {
+      id: req.params.id,
+      title: req.body.title,
+      status: req.body.status,
+      type: req.body.type,
+    };
+
+    try {
+      const media = await mediaModel.findById(data.id);
+      if (!media) {
+        res.status(404).json({ message: "Media not found!" });
+        return;
+      }
+
+      const updatedMedia = await mediaModel.findByIdAndUpdate(
+        data.id,
+        {
+          title: data.title,
+          status: data.status,
+        },
+        {
+          new: true,
+        }
+      );
+      res.status(200).json({ message: "Media updated!", media: updatedMedia });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong!",
+        error: error,
+      });
+    }
+  };
+
+  //upvote media
+  private upvoteMedia = async (req: Request, res: Response) => {
+    const data = {
+      id: req.params.id,
+      user: req.body.user,
+    };
+
+    try {
+      const media = await mediaModel.findById(data.id);
+      if (!media) {
+        res.status(404).json({ message: "Media not found!" });
+        return;
+      }
+
+      //check user
+      const user = await userModel.findById(data.user);
+      if (!user) {
+        res.status(404).json({ message: "User not found!" });
+        return;
+      }
+
+      //check if user already upvoted
+      const upvoted = media.upvotes.find((upvote) => upvote == data.user);
+      if (upvoted) {
+        res.status(400).json({ message: "User already upvoted!" });
+        return;
+      }
+
+      //update media
+      await mediaModel.findByIdAndUpdate(data.id, {
+        $push: { upvotes: data.user },
+      });
+
+      res.status(200).json({ message: "Media upvoted!" });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong!",
+        error: error,
+      });
+    }
+  };
 
   //delete media
-  private deleteMedia = async (req: Request, res: Response) => {};
+  private deleteMedia = async (req: Request, res: Response) => {
+    const data = {
+      id: req.params.id,
+    };
+
+    try {
+      const media = await mediaModel.findById(data.id);
+      if (!media) {
+        res.status(404).json({ message: "Media not found!" });
+        return;
+      }
+      //delete from cloudinary
+      const result = await this.cloudinary.uploader.destroy(media.cloudinaryId);
+
+      //delete from database
+      await mediaModel.findByIdAndDelete(data.id);
+      res.status(200).json({ message: "Media deleted!" });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong!",
+        error: error,
+      });
+    }
+  };
 }
 
 export default MediaController;

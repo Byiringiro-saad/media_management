@@ -13,13 +13,21 @@ const mediaSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    cloudinaryId: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        required: true,
+        enum: ["private", "public"],
+    },
     type: {
         type: String,
         required: true,
     },
     upvotes: {
-        type: Number,
-        default: 0,
+        type: [mongoose_1.default.Schema.Types.ObjectId],
     },
     user: {
         type: mongoose_1.default.Schema.Types.ObjectId,
