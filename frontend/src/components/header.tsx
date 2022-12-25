@@ -19,7 +19,7 @@ const Header: FC<Props> = ({ user }) => {
   };
 
   const upvotes = user?.medias?.reduce((acc: number, curr: any) => {
-    return acc + curr.upvotes;
+    return acc + curr.upvotes.length;
   }, 0);
 
   return (
