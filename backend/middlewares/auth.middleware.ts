@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { NextFunction, Response } from "express";
+import { NextFunction, Response, Request } from "express";
 
 //interface
 import UserRequest from "../interfaces/userRequest.interface";

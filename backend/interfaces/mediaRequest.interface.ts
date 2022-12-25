@@ -1,9 +1,9 @@
-import { Express } from "express";
+import { Request } from "express";
 
-interface mediaRequest extends Express {
+interface mediaRequest extends Request {
   body: any;
-  file: any;
-  user: string;
+  file?: any;
+  user?: string;
 }
 
 export default mediaRequest;

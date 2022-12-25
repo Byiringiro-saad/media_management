@@ -1,7 +1,7 @@
 import { Request } from "express";
 
 interface UserRequest extends Request {
-  user: string;
+  user?: string;
   body: any;
 }
 

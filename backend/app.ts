@@ -24,8 +24,8 @@ class App {
 
   //listen to port
   public listen() {
-    this.app.listen(process.env.PORT, () => {
-      console.log(`App listening on the port ${process.env.PORT}`);
+    this.app.listen(process.env.PORT || 8080, () => {
+      console.log(`App listening on the port ${process.env.PORT || 8080}`);
     });
   }
 
@@ -47,9 +47,14 @@ class App {
   //connect to database
   private connectToDatabase() {
     mongoose.set("strictQuery", false);
-    mongoose.connect(`mongodb://127.0.0.1:27017/SaadMedius`, {}).then(() => {
-      console.log("Connected to database");
-    });
+    mongoose
+      .connect(
+        `mongodb+srv://saad:tYYnUwSzaFp48omt@cluster0.0kcbhqe.mongodb.net/?retryWrites=true&w=majority`,
+        {}
+      )
+      .then(() => {
+        console.log("Connected to database");
+      });
   }
 }
 

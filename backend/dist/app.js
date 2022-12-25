@@ -20,8 +20,8 @@ class App {
     }
     //listen to port
     listen() {
-        this.app.listen(process.env.PORT, () => {
-            console.log(`App listening on the port ${process.env.PORT}`);
+        this.app.listen(process.env.PORT || 8080, () => {
+            console.log(`App listening on the port ${process.env.PORT || 8080}`);
         });
     }
     //initialise middlewares
@@ -40,7 +40,9 @@ class App {
     //connect to database
     connectToDatabase() {
         mongoose_1.default.set("strictQuery", false);
-        mongoose_1.default.connect(`mongodb://127.0.0.1:27017/SaadMedius`, {}).then(() => {
+        mongoose_1.default
+            .connect(`mongodb+srv://saad:tYYnUwSzaFp48omt@cluster0.0kcbhqe.mongodb.net/?retryWrites=true&w=majority`, {})
+            .then(() => {
             console.log("Connected to database");
         });
     }
