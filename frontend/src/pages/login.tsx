@@ -11,6 +11,10 @@ import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 //layouts
 import AuthLayout from "../layouts/auth";
 
+//firebase
+import app from "../features/firebase";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+
 //files
 import loader from "../assets/loader.svg";
 import axiosInstance from "../features/axios";
@@ -31,6 +35,35 @@ const Login: FC = () => {
   //handle show password
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  //firebase
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  //handle google
+  const handleGoogle = async () => {
+    const res = await signInWithPopup(auth, provider);
+    const user = res.user;
+    axiosInstance
+      .post("/users/login", {
+        usedGoogle: true,
+        email: user.email,
+      })
+      .then((res) => {
+        setLoading(false);
+        sessionStorage.setItem("token", res.data.token);
+        navigate("/home");
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast(`${err.response.data.message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          theme: "dark",
+        });
+      });
   };
 
   //submit
@@ -134,7 +167,7 @@ const Login: FC = () => {
               {loading ? <img src={loader} alt="loader" /> : "Login"}
             </button>
           </div>
-          <div className="row">
+          <div className="row" onClick={handleGoogle}>
             <FcGoogle className="big" />
             <p>Login with Google</p>
           </div>

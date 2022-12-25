@@ -4,6 +4,10 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 
+//firebase
+import app from "../features/firebase";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+
 //icons
 import { FcGoogle } from "react-icons/fc";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
@@ -24,6 +28,10 @@ const Signup: FC = () => {
     formState: { errors },
   } = useForm();
 
+  //firebase
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
   //local data
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -31,6 +39,32 @@ const Signup: FC = () => {
   //handle show password
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  //handle google
+  const handleGoogle = async () => {
+    const res = await signInWithPopup(auth, provider);
+    const user = res.user;
+    axiosInstance
+      .post("/users/signup", {
+        name: user.displayName,
+        usedGoogle: true,
+        email: user.email,
+      })
+      .then((res) => {
+        setLoading(false);
+        sessionStorage.setItem("token", res.data.token);
+        navigate("/home");
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast(`${err.response.data.message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          theme: "dark",
+        });
+      });
   };
 
   //submit
@@ -164,7 +198,7 @@ const Signup: FC = () => {
               {loading ? <img src={loader} alt="loader" /> : "Signup"}
             </button>
           </div>
-          <div className="row">
+          <div className="row" onClick={handleGoogle}>
             <FcGoogle className="big" />
             <p>Signup with Google</p>
           </div>
