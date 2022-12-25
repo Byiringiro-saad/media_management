@@ -4,11 +4,11 @@ import { useDropzone } from "react-dropzone";
 import { FC, useCallback, useState } from "react";
 
 //components
-import Nav from "../components/nav";
-import axiosInstance from "../features/axios";
+import Nav from "../../components/nav";
+import axiosInstance from "../../features/axios";
 
 //files
-import loader from "../assets/loader.svg";
+import loader from "../../assets/loader.svg";
 import { toast } from "react-toastify";
 
 //functions

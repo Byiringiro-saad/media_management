@@ -1,16 +1,17 @@
 import * as React from "react";
+import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import styled from "styled-components";
 import { useNavigate } from "react-router";
 
 //icons
+import { AiFillEdit } from "react-icons/ai";
 import { HiDownload } from "react-icons/hi";
 import { BiChevronsUp } from "react-icons/bi";
 
 //files
 import { Media as MInterface } from "../../features/interfaces";
 import axiosInstance from "../../features/axios";
-import { toast } from "react-toastify";
 
 type Props = {
   media: MInterface;
@@ -35,6 +36,10 @@ const Media: React.FC<Props> = ({ media }) => {
 
   const goToMedia = () => {
     navigate(`/home/${media?._id}`);
+  };
+
+  const goToEdit = () => {
+    navigate(`/edit/${media?._id}`);
   };
 
   const upvote = () => {
@@ -74,9 +79,13 @@ const Media: React.FC<Props> = ({ media }) => {
           <div className="one" onClick={upvote}>
             <BiChevronsUp className="icon" />
           </div>
+          <div className="one" onClick={goToEdit}>
+            <AiFillEdit className="icon" />
+          </div>
           <div className="one">
             <HiDownload className="icon" />
           </div>
+
           <div className="background" onClick={goToMedia}></div>
         </motion.div>
         <div className="upvotes">

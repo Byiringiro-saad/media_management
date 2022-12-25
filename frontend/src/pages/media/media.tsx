@@ -9,10 +9,10 @@ import { BiChevronsUp } from "react-icons/bi";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 //components
-import Nav from "../components/nav";
+import Nav from "../../components/nav";
 
 //files
-import axiosInstance from "../features/axios";
+import axiosInstance from "../../features/axios";
 
 const Media: React.FC = () => {
   //configs

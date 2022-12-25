@@ -8,10 +8,11 @@ import "react-toastify/dist/ReactToastify.css";
 //pages
 import Index from "./pages";
 import Home from "./pages/home";
-import Media from "./pages/media";
 import Login from "./pages/login";
-import Upload from "./pages/upload";
 import Signup from "./pages/signup";
+import Update from "./pages/media/edit";
+import Media from "./pages/media/media";
+import Upload from "./pages/media/upload";
 import Profile from "./pages/profile/profile";
 import Settings from "./pages/profile/settings";
 
@@ -27,6 +28,7 @@ const App: React.FC = () => {
         <Route path="/home/:id" element={<Media />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/edit/:id" element={<Update />} />
         <Route path="/profile/settings" element={<Settings />} />
       </Routes>
     </Router>

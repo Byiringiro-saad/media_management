@@ -9,7 +9,7 @@ import ProfileLayout from "../../layouts/profile";
 
 //files
 import axiosInstance from "../../features/axios";
-import MediasContainer from "../../components/medias/container";
+import ProfileMediasContainer from "../../components/profile/container";
 
 const Profile: FC = () => {
   const decoded: any = jwt_decode(sessionStorage.getItem("token")!);
@@ -22,7 +22,7 @@ const Profile: FC = () => {
     <ProfileLayout user={data?.user}>
       <Container>
         <Paginate />
-        <MediasContainer data={data?.user?.medias} />
+        <ProfileMediasContainer data={data?.user?.medias} />
       </Container>
     </ProfileLayout>
   );

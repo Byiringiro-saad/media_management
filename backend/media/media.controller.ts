@@ -41,15 +41,13 @@ class MediaController implements Controller {
       authMiddleware,
       this.getPrivateMedias
     );
-    this.router.put(`${this.path}/:id`, this.updateMedia);
+    this.router.put(`${this.path}/:id`, authMiddleware, this.updateMedia);
     this.router.delete(`${this.path}/:id`, this.deleteMedia);
     this.router.put(
       `${this.path}/upvote/:id`,
       authMiddleware,
       this.upvoteMedia
     );
-    this.router.put(`${this.path}/public/:id`, this.turnIntoPublic);
-    this.router.put(`${this.path}/private/:id`, this.turnIntoPrivate);
   }
 
   //initialize cloudinary
@@ -197,79 +195,27 @@ class MediaController implements Controller {
     }
   };
 
-  //turn media to public
-  private turnIntoPublic = async (req: Request, res: Response) => {
-    const data = {
-      id: req.params.id,
-    };
-
-    try {
-      const media = await mediaModel.findById(data.id);
-      if (!media) {
-        res.status(404).json({ message: "Media not found!" });
-        return;
-      }
-
-      //update media
-      const updatedMedia = await mediaModel.findByIdAndUpdate(data.id, {
-        status: "public",
-      });
-
-      res.status(200).json({ message: "Media updated!" });
-    } catch (error) {
-      res.status(500).json({
-        message: "Something went wrong!",
-        error: error,
-      });
-    }
-  };
-
-  //turn media to private
-  private turnIntoPrivate = async (req: Request, res: Response) => {
-    const data = {
-      id: req.params.id,
-    };
-
-    try {
-      const media = await mediaModel.findById(data.id);
-      if (!media) {
-        res.status(404).json({ message: "Media not found!" });
-        return;
-      }
-
-      //update media
-      const updatedMedia = await mediaModel.findByIdAndUpdate(
-        data.id,
-        {
-          status: "private",
-        },
-        {
-          new: true,
-        }
-      );
-
-      res.status(200).json({ message: "Media updated!" });
-    } catch (error) {
-      res.status(500).json({
-        message: "Something went wrong!",
-        error: error,
-      });
-    }
-  };
-
   //update media
-  private updateMedia = async (req: Request, res: Response) => {
+  private updateMedia = async (req: UserRequest, res: Response) => {
     const data = {
       id: req.params.id,
       title: req.body.title,
       status: req.body.status,
-      type: req.body.type,
+      user: req.user,
     };
+
+    console.log(data);
 
     try {
       const media = await mediaModel.findById(data.id);
       if (!media) {
         res.status(404).json({ message: "Media not found!" });
+        return;
+      }
+
+      //if user is not owner
+      if (media.user != data.user) {
+        res.status(401).json({ message: "Unauthorized!" });
         return;
       }
 

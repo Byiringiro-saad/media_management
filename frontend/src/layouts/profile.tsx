@@ -3,7 +3,7 @@ import { FC, PropsWithChildren } from "react";
 
 //files
 import Nav from "../components/nav";
-import Header from "../components/header";
+import Header from "../components/profile/header";
 
 interface Props extends PropsWithChildren<any> {
   user: any;

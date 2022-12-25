@@ -129,68 +129,24 @@ class MediaController {
                 });
             }
         });
-        //turn media to public
-        this.turnIntoPublic = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const data = {
-                id: req.params.id,
-            };
-            try {
-                const media = yield media_model_1.default.findById(data.id);
-                if (!media) {
-                    res.status(404).json({ message: "Media not found!" });
-                    return;
-                }
-                //update media
-                const updatedMedia = yield media_model_1.default.findByIdAndUpdate(data.id, {
-                    status: "public",
-                });
-                res.status(200).json({ message: "Media updated!" });
-            }
-            catch (error) {
-                res.status(500).json({
-                    message: "Something went wrong!",
-                    error: error,
-                });
-            }
-        });
-        //turn media to private
-        this.turnIntoPrivate = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const data = {
-                id: req.params.id,
-            };
-            try {
-                const media = yield media_model_1.default.findById(data.id);
-                if (!media) {
-                    res.status(404).json({ message: "Media not found!" });
-                    return;
-                }
-                //update media
-                const updatedMedia = yield media_model_1.default.findByIdAndUpdate(data.id, {
-                    status: "private",
-                }, {
-                    new: true,
-                });
-                res.status(200).json({ message: "Media updated!" });
-            }
-            catch (error) {
-                res.status(500).json({
-                    message: "Something went wrong!",
-                    error: error,
-                });
-            }
-        });
         //update media
         this.updateMedia = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const data = {
                 id: req.params.id,
                 title: req.body.title,
                 status: req.body.status,
-                type: req.body.type,
+                user: req.user,
             };
+            console.log(data);
             try {
                 const media = yield media_model_1.default.findById(data.id);
                 if (!media) {
                     res.status(404).json({ message: "Media not found!" });
+                    return;
+                }
+                //if user is not owner
+                if (media.user != data.user) {
+                    res.status(401).json({ message: "Unauthorized!" });
                     return;
                 }
                 const updatedMedia = yield media_model_1.default.findByIdAndUpdate(data.id, {
@@ -278,11 +234,9 @@ class MediaController {
         this.router.get(`${this.path}/`, this.getPublicMedias);
         this.router.post(`${this.path}/create`, auth_middleware_1.default, this.upload.single("file"), this.createMedia);
         this.router.get(`${this.path}/private`, auth_middleware_1.default, this.getPrivateMedias);
-        this.router.put(`${this.path}/:id`, this.updateMedia);
+        this.router.put(`${this.path}/:id`, auth_middleware_1.default, this.updateMedia);
         this.router.delete(`${this.path}/:id`, this.deleteMedia);
         this.router.put(`${this.path}/upvote/:id`, auth_middleware_1.default, this.upvoteMedia);
-        this.router.put(`${this.path}/public/:id`, this.turnIntoPublic);
-        this.router.put(`${this.path}/private/:id`, this.turnIntoPrivate);
     }
     //initialize cloudinary
     initializeCloudinary() {
