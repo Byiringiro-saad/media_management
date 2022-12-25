@@ -73,7 +73,7 @@ const Container = styled.div`
 
   .media {
     width: 100%;
-    height: auto;
+    height: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -134,6 +134,7 @@ const Container = styled.div`
 
     img {
       width: 100%;
+      height: 100%;
       object-fit: cover;
       object-position: center;
     }

@@ -12,6 +12,8 @@ import Media from "./pages/media";
 import Login from "./pages/login";
 import Upload from "./pages/upload";
 import Signup from "./pages/signup";
+import Profile from "./pages/profile/profile";
+import Settings from "./pages/profile/settings";
 
 const App: React.FC = () => {
   return (
@@ -24,6 +26,8 @@ const App: React.FC = () => {
         <Route path="/home" element={<Home />} />
         <Route path="/home/:id" element={<Media />} />
         <Route path="/upload" element={<Upload />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/settings" element={<Settings />} />
       </Routes>
     </Router>
   );

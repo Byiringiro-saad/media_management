@@ -46,9 +46,7 @@ class UserController {
                     }
                     else {
                         //create token
-                        const token = jsonwebtoken_1.default.sign({ id: user._id }, "Secret", {
-                            expiresIn: "1h",
-                        });
+                        const token = jsonwebtoken_1.default.sign({ id: user._id }, "Secret", {});
                         //send response
                         return res.status(200).json({ token });
                     }
@@ -59,9 +57,7 @@ class UserController {
                     throw new Error("Incorrect password");
                 }
                 //create token
-                const token = jsonwebtoken_1.default.sign({ id: user._id }, "Secret", {
-                    expiresIn: "1h",
-                });
+                const token = jsonwebtoken_1.default.sign({ id: user._id }, "Secret", {});
                 //send response
                 res.status(200).json({ token });
             }
@@ -99,11 +95,9 @@ class UserController {
                         email: data.email,
                         usedGoogle: data.usedGoogle,
                     });
-                    yield newUser.save();
+                    const user = yield newUser.save();
                     //create signin token
-                    const token = jsonwebtoken_1.default.sign({ email: data === null || data === void 0 ? void 0 : data.email }, "secret", {
-                        expiresIn: "1h",
-                    });
+                    const token = jsonwebtoken_1.default.sign({ id: user._id }, "Secret", {});
                     //send response
                     return res.status(200).send({ token });
                 }
@@ -115,11 +109,9 @@ class UserController {
                     password: hashedPassword,
                     usedGoogle: data.usedGoogle,
                 });
-                yield newUser.save();
+                const userData = yield newUser.save();
                 //create signin token
-                const token = jsonwebtoken_1.default.sign({ email: data === null || data === void 0 ? void 0 : data.email }, "secret", {
-                    expiresIn: "1h",
-                });
+                const token = jsonwebtoken_1.default.sign({ id: userData._id }, "Secret", {});
                 //send response
                 return res.status(200).send({ token });
             }
@@ -137,7 +129,7 @@ class UserController {
             };
             try {
                 //check if user exists
-                const user = yield user_model_1.default.findById(data.id);
+                const user = yield user_model_1.default.findById(data.id).populate("medias");
                 if (!user) {
                     throw new Error("User does not exist");
                 }
@@ -170,8 +162,15 @@ class UserController {
                 if (emailExists) {
                     throw new Error("Email already exists");
                 }
+                let hashedPassword = "";
+                //check if password was changed
+                if (data.password === "") {
+                    hashedPassword = user.password;
+                }
+                else {
+                    hashedPassword = yield bcryptjs_1.default.hash(data.password, 10);
+                }
                 //update user
-                const hashedPassword = yield bcryptjs_1.default.hash(data.password, 10);
                 const updatedUser = yield user_model_1.default.findByIdAndUpdate(data.id, {
                     name: data.name,
                     email: data.email,
@@ -194,7 +193,30 @@ class UserController {
             }
         });
         //delete user
-        this.deleteUser = (req, res) => __awaiter(this, void 0, void 0, function* () { });
+        this.deleteUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const data = {
+                id: req.params.id,
+            };
+            try {
+                //check if user exists
+                const user = yield user_model_1.default.findById;
+                if (!user) {
+                    throw new Error("User does not exist");
+                }
+                //delete user
+                yield user_model_1.default.findByIdAndDelete(data.id);
+                //send response
+                res.status(200).json({
+                    message: "User deleted successfully",
+                });
+            }
+            catch (error) {
+                res.status(400).json({
+                    status: "error",
+                    message: error.message,
+                });
+            }
+        });
         //verify signup inputs
         this.validateSignup = joi_1.default.object({
             name: joi_1.default.string().min(3).max(255).required(),

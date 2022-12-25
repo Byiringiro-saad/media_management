@@ -19,6 +19,8 @@ const express_1 = require("express");
 //files
 const media_model_1 = __importDefault(require("./media.model"));
 const user_model_1 = __importDefault(require("../user/user.model"));
+//middleware
+const auth_middleware_1 = __importDefault(require("../middlewares/auth.middleware"));
 class MediaController {
     constructor() {
         this.path = "/medias";
@@ -30,8 +32,9 @@ class MediaController {
                 title: req.body.title,
                 status: req.body.status,
                 type: req.body.type,
-                user: req.body.user,
+                user: req.user,
             };
+            console.log(data);
             try {
                 //check user
                 const user = yield user_model_1.default.findById(data.user);
@@ -81,9 +84,38 @@ class MediaController {
             }
         });
         //get all media (public)
-        this.getAllMedias = (req, res) => __awaiter(this, void 0, void 0, function* () {
+        this.getPublicMedias = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const medias = yield media_model_1.default.find({ status: "public" });
+                if (!medias) {
+                    res.status(404).json({ message: "Medias not found!" });
+                    return;
+                }
+                res.status(200).json({ message: "Medias found!", medias: medias });
+            }
+            catch (error) {
+                res.status(500).json({
+                    message: "Something went wrong!",
+                    error: error,
+                });
+            }
+        });
+        //get all media (private)
+        this.getPrivateMedias = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const data = {
+                id: req.user,
+            };
+            //check user
+            const user = yield user_model_1.default.findById(data.id);
+            if (!user) {
+                res.status(400).json({ message: "User not found!" });
+                return;
+            }
+            try {
+                const medias = yield media_model_1.default.find({
+                    status: "private",
+                    user: data.id,
+                });
                 if (!medias) {
                     res.status(404).json({ message: "Medias not found!" });
                     return;
@@ -243,8 +275,9 @@ class MediaController {
     }
     initializeRoutes() {
         this.router.get(`${this.path}/:id`, this.getMedia);
-        this.router.get(`${this.path}/`, this.getAllMedias);
-        this.router.post(`${this.path}/create`, this.upload.single("file"), this.createMedia);
+        this.router.get(`${this.path}/`, this.getPublicMedias);
+        this.router.post(`${this.path}/create`, auth_middleware_1.default, this.upload.single("file"), this.createMedia);
+        this.router.get(`${this.path}/private`, auth_middleware_1.default, this.getPrivateMedias);
         this.router.put(`${this.path}/:id`, this.updateMedia);
         this.router.delete(`${this.path}/:id`, this.deleteMedia);
         this.router.put(`${this.path}/upvote/:id`, this.upvoteMedia);

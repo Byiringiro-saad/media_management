@@ -50,9 +50,7 @@ class UserController implements Controller {
           throw new Error("You did not sign up using Google");
         } else {
           //create token
-          const token = jwt.sign({ id: user._id }, "Secret", {
-            expiresIn: "1h",
-          });
+          const token = jwt.sign({ id: user._id }, "Secret", {});
 
           //send response
           return res.status(200).json({ token });
@@ -69,9 +67,7 @@ class UserController implements Controller {
       }
 
       //create token
-      const token = jwt.sign({ id: user._id }, "Secret", {
-        expiresIn: "1h",
-      });
+      const token = jwt.sign({ id: user._id }, "Secret", {});
 
       //send response
       res.status(200).json({ token });
@@ -114,12 +110,10 @@ class UserController implements Controller {
           usedGoogle: data.usedGoogle,
         });
 
-        await newUser.save();
+        const user = await newUser.save();
 
         //create signin token
-        const token = jwt.sign({ email: data?.email }, "secret", {
-          expiresIn: "1h",
-        });
+        const token = jwt.sign({ id: user._id }, "Secret", {});
 
         //send response
         return res.status(200).send({ token });
@@ -133,12 +127,10 @@ class UserController implements Controller {
         password: hashedPassword,
         usedGoogle: data.usedGoogle,
       });
-      await newUser.save();
+      const userData = await newUser.save();
 
       //create signin token
-      const token = jwt.sign({ email: data?.email }, "secret", {
-        expiresIn: "1h",
-      });
+      const token = jwt.sign({ id: userData._id }, "Secret", {});
 
       //send response
       return res.status(200).send({ token });
@@ -158,7 +150,7 @@ class UserController implements Controller {
 
     try {
       //check if user exists
-      const user = await userModel.findById(data.id);
+      const user = await userModel.findById(data.id).populate("medias");
       if (!user) {
         throw new Error("User does not exist");
       }
@@ -195,8 +187,16 @@ class UserController implements Controller {
         throw new Error("Email already exists");
       }
 
+      let hashedPassword = "";
+
+      //check if password was changed
+      if (data.password === "") {
+        hashedPassword = user.password;
+      } else {
+        hashedPassword = await bcrypt.hash(data.password, 10);
+      }
+
       //update user
-      const hashedPassword = await bcrypt.hash(data.password, 10);
       const updatedUser = await userModel.findByIdAndUpdate(
         data.id,
         {
@@ -224,7 +224,32 @@ class UserController implements Controller {
   };
 
   //delete user
-  private deleteUser = async (req: Request, res: Response) => {};
+  private deleteUser = async (req: Request, res: Response) => {
+    const data = {
+      id: req.params.id,
+    };
+
+    try {
+      //check if user exists
+      const user = await userModel.findById;
+      if (!user) {
+        throw new Error("User does not exist");
+      }
+
+      //delete user
+      await userModel.findByIdAndDelete(data.id);
+
+      //send response
+      res.status(200).json({
+        message: "User deleted successfully",
+      });
+    } catch (error: Error | any) {
+      res.status(400).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  };
 
   //verify signup inputs
   private validateSignup = Joi.object({

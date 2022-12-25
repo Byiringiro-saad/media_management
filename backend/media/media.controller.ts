@@ -8,6 +8,13 @@ import mediaModel from "./media.model";
 import userModel from "../user/user.model";
 import Controller from "../interfaces/controller.interface";
 
+//middleware
+import authMiddleware from "../middlewares/auth.middleware";
+
+//interface
+import UserRequest from "../interfaces/userRequest.interface";
+import mediaRequest from "../interfaces/mediaRequest.interface";
+
 class MediaController implements Controller {
   public path = "/medias";
   public router = Router();
@@ -22,11 +29,17 @@ class MediaController implements Controller {
 
   private initializeRoutes() {
     this.router.get(`${this.path}/:id`, this.getMedia);
-    this.router.get(`${this.path}/`, this.getAllMedias);
+    this.router.get(`${this.path}/`, this.getPublicMedias);
     this.router.post(
       `${this.path}/create`,
+      authMiddleware,
       this.upload.single("file"),
       this.createMedia
+    );
+    this.router.get(
+      `${this.path}/private`,
+      authMiddleware,
+      this.getPrivateMedias
     );
     this.router.put(`${this.path}/:id`, this.updateMedia);
     this.router.delete(`${this.path}/:id`, this.deleteMedia);
@@ -62,13 +75,15 @@ class MediaController implements Controller {
   }
 
   //new media
-  private createMedia = async (req: any, res: Response) => {
+  private createMedia = async (req: mediaRequest, res: Response) => {
     const data = {
       title: req.body.title,
       status: req.body.status,
       type: req.body.type,
-      user: req.body.user,
+      user: req.user,
     };
+
+    console.log(data);
 
     try {
       //check user
@@ -129,9 +144,41 @@ class MediaController implements Controller {
   };
 
   //get all media (public)
-  private getAllMedias = async (req: Request, res: Response) => {
+  private getPublicMedias = async (req: Request, res: Response) => {
     try {
       const medias = await mediaModel.find({ status: "public" });
+      if (!medias) {
+        res.status(404).json({ message: "Medias not found!" });
+        return;
+      }
+
+      res.status(200).json({ message: "Medias found!", medias: medias });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong!",
+        error: error,
+      });
+    }
+  };
+
+  //get all media (private)
+  private getPrivateMedias = async (req: UserRequest, res: Response) => {
+    const data = {
+      id: req.user,
+    };
+
+    //check user
+    const user = await userModel.findById(data.id);
+    if (!user) {
+      res.status(400).json({ message: "User not found!" });
+      return;
+    }
+
+    try {
+      const medias = await mediaModel.find({
+        status: "private",
+        user: data.id,
+      });
       if (!medias) {
         res.status(404).json({ message: "Medias not found!" });
         return;
