@@ -1,21 +1,40 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import jwt_decode from "jwt-decode";
 import { useQuery } from "react-query";
 import styled from "styled-components";
+import { useNavigate } from "react-router";
 
 //components
-import Paginate from "../../components/paginate";
 import ProfileLayout from "../../layouts/profile";
 
 //files
 import axiosInstance from "../../features/axios";
 import ProfileMediasContainer from "../../components/profile/container";
+import { toast } from "react-toastify";
 
 const Profile: FC = () => {
-  const decoded: any = jwt_decode(sessionStorage.getItem("token")!);
+  //config
+  const navigate = useNavigate();
+
+  //local data
+  let decoded: any = "";
+
+  useEffect(() => {
+    if (!sessionStorage.getItem("token")) {
+      toast("Please login", {
+        position: "top-right",
+        autoClose: 5000,
+        closeOnClick: true,
+        theme: "dark",
+      });
+      navigate("/login");
+    } else {
+      decoded = jwt_decode(sessionStorage?.getItem("token")!);
+    }
+  }, []);
 
   const { data } = useQuery("profile", async () => {
-    return axiosInstance.get(`/users/${decoded.id}`).then((res) => res.data);
+    return axiosInstance.get(`/users/${decoded?.id}`).then((res) => res.data);
   });
 
   return (

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -16,7 +16,7 @@ import ProfileLayout from "../../layouts/profile";
 const Settings: FC = () => {
   //local data
   const [loading, setLoading] = useState(false);
-  const decoded: any = jwt_decode(sessionStorage.getItem("token")!);
+  let decoded: any = "";
 
   const { data } = useQuery("profile", async () => {
     return axiosInstance.get(`/users/${decoded.id}`).then((res) => res.data);
@@ -89,6 +89,20 @@ const Settings: FC = () => {
         });
       });
   };
+
+  useEffect(() => {
+    if (!sessionStorage.getItem("token")) {
+      toast("Please login", {
+        position: "top-right",
+        autoClose: 5000,
+        closeOnClick: true,
+        theme: "dark",
+      });
+      navigate("/login");
+    } else {
+      decoded = jwt_decode(sessionStorage.getItem("token")!);
+    }
+  }, []);
 
   return (
     <ProfileLayout user={data?.user}>
