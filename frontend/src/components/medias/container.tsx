@@ -12,9 +12,11 @@ type Props = {
 };
 
 const MediasContainer: FC<Props> = ({ data }) => {
+  const medias = data?.sort((a, b) => b.upvotes.length - a.upvotes.length);
+
   return (
     <Container>
-      {data?.map((media: MInterface, index) => {
+      {medias?.map((media: MInterface, index) => {
         return <Media key={index} media={media} />;
       })}
     </Container>

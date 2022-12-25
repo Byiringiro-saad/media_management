@@ -4,18 +4,39 @@ import styled from "styled-components";
 //icons
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 
-const Paginate: FC = () => {
-  const [active, setActive] = useState(1);
+interface Props {
+  mediasPerPage: number;
+  totalMedias: number;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+}
+
+const Paginate: FC<Props> = ({
+  mediasPerPage,
+  totalMedias,
+  currentPage,
+  setCurrentPage,
+}) => {
+  //local data
+  const pageNumbers = [];
+
+  for (let i = 1; i <= Math.ceil(totalMedias / mediasPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  const paginate = (number: number) => {
+    setCurrentPage(number);
+  };
 
   const goDown = () => {
-    if (active > 1) {
-      setActive(active - 1);
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
     }
   };
 
   const goUp = () => {
-    if (active < 4) {
-      setActive(active + 1);
+    if (currentPage < pageNumbers.length) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
@@ -26,18 +47,15 @@ const Paginate: FC = () => {
           <HiChevronLeft className="icon" />
         </div>
         <div className="nums">
-          <div className={active === 1 ? "num active" : "num"}>
-            <p>1</p>
-          </div>
-          <div className={active === 2 ? "num active" : "num"}>
-            <p>2</p>
-          </div>
-          <div className={active === 3 ? "num active" : "num"}>
-            <p>3</p>
-          </div>
-          <div className={active === 4 ? "num active" : "num"}>
-            <p>4</p>
-          </div>
+          {pageNumbers.map((number) => (
+            <div
+              key={number}
+              className={currentPage === number ? "num active" : "num"}
+              onClick={() => paginate(number)}
+            >
+              <p>{number}</p>
+            </div>
+          ))}
         </div>
         <div className="one" onClick={goUp}>
           <HiChevronRight className="icon" />

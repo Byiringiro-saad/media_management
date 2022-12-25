@@ -38,6 +38,35 @@ const Update: FC = () => {
     },
   });
 
+  //delete media
+  const deleteMedia = () => {
+    setLoading(true);
+    axiosInstance
+      .delete(`/medias/${params.id}`, {
+        headers: {
+          Authorization: sessionStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        setLoading(false);
+        toast(`${res.data.message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          theme: "dark",
+        });
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast(`${err.response.data.message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          theme: "dark",
+        });
+      });
+  };
+
   //on submit
   const onSubmit = (datas: any) => {
     setLoading(true);
@@ -113,6 +142,9 @@ const Update: FC = () => {
         )}
         <button type="submit">
           {loading ? <img src={loader} alt="loading" /> : "Update"}
+        </button>
+        <button type="button" className="delete" onClick={deleteMedia}>
+          Delete
         </button>
       </form>
     </Container>
@@ -202,6 +234,10 @@ const Container = styled.div`
       img {
         width: 50px;
       }
+    }
+
+    .delete {
+      background: var(--red);
     }
   }
 `;

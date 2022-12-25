@@ -205,11 +205,23 @@ class MediaController {
         this.deleteMedia = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const data = {
                 id: req.params.id,
+                user: req.user,
             };
             try {
                 const media = yield media_model_1.default.findById(data.id);
                 if (!media) {
                     res.status(404).json({ message: "Media not found!" });
+                    return;
+                }
+                //user exists
+                const user = yield user_model_1.default.findById(data.user);
+                if (!user) {
+                    res.status(404).json({ message: "User not found!" });
+                    return;
+                }
+                //if user is not owner
+                if (media.user != data.user) {
+                    res.status(401).json({ message: "Unauthorized!" });
                     return;
                 }
                 //delete from cloudinary
@@ -235,7 +247,7 @@ class MediaController {
         this.router.post(`${this.path}/create`, auth_middleware_1.default, this.upload.single("file"), this.createMedia);
         this.router.get(`${this.path}/private`, auth_middleware_1.default, this.getPrivateMedias);
         this.router.put(`${this.path}/:id`, auth_middleware_1.default, this.updateMedia);
-        this.router.delete(`${this.path}/:id`, this.deleteMedia);
+        this.router.delete(`${this.path}/:id`, auth_middleware_1.default, this.deleteMedia);
         this.router.put(`${this.path}/upvote/:id`, auth_middleware_1.default, this.upvoteMedia);
     }
     //initialize cloudinary

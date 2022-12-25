@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import { useDispatch } from "react-redux";
@@ -16,14 +16,24 @@ const Home: FC = () => {
   //configs
   const dispatch = useDispatch();
 
+  //local data
+  const [currentPage, setCurrentPage] = useState(1);
+  const [mediasPerPage] = useState(12);
+
+  //...
+  const indexOfLastMedia = currentPage * mediasPerPage;
+  const indexOfFirstMedia = indexOfLastMedia - mediasPerPage;
+
   //fetching medias
-  const { isLoading, data } = useQuery("home", () => {
+  const { data } = useQuery("home", () => {
     return axiosInstance.get("http://localhost:8080/medias/").then((res) => {
       dispatch(addMedias(res?.data?.medias));
       return res?.data?.medias;
     });
   });
 
+  //current medias
+  const currentMedias = data?.slice(indexOfFirstMedia, indexOfLastMedia);
   return (
     <Container>
       <Nav />
@@ -32,11 +42,16 @@ const Home: FC = () => {
           <p>{data?.length} Medias</p>
         </div>
         <div className="pagination">
-          <Paginate />
+          <Paginate
+            mediasPerPage={mediasPerPage}
+            totalMedias={data?.length}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </div>
       </div>
       <div className="medias">
-        <MediasContainer data={data} />
+        <MediasContainer data={currentMedias} />
       </div>
     </Container>
   );

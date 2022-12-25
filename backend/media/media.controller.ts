@@ -42,7 +42,7 @@ class MediaController implements Controller {
       this.getPrivateMedias
     );
     this.router.put(`${this.path}/:id`, authMiddleware, this.updateMedia);
-    this.router.delete(`${this.path}/:id`, this.deleteMedia);
+    this.router.delete(`${this.path}/:id`, authMiddleware, this.deleteMedia);
     this.router.put(
       `${this.path}/upvote/:id`,
       authMiddleware,
@@ -281,9 +281,10 @@ class MediaController implements Controller {
   };
 
   //delete media
-  private deleteMedia = async (req: Request, res: Response) => {
+  private deleteMedia = async (req: UserRequest, res: Response) => {
     const data = {
       id: req.params.id,
+      user: req.user,
     };
 
     try {
@@ -292,6 +293,20 @@ class MediaController implements Controller {
         res.status(404).json({ message: "Media not found!" });
         return;
       }
+
+      //user exists
+      const user = await userModel.findById(data.user);
+      if (!user) {
+        res.status(404).json({ message: "User not found!" });
+        return;
+      }
+
+      //if user is not owner
+      if (media.user != data.user) {
+        res.status(401).json({ message: "Unauthorized!" });
+        return;
+      }
+
       //delete from cloudinary
       const result = await this.cloudinary.uploader.destroy(media.cloudinaryId);
 

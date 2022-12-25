@@ -21,7 +21,6 @@ const Profile: FC = () => {
   return (
     <ProfileLayout user={data?.user}>
       <Container>
-        <Paginate />
         <ProfileMediasContainer data={data?.user?.medias} />
       </Container>
     </ProfileLayout>

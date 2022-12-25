@@ -104,7 +104,9 @@ const Settings: FC = () => {
             {loading ? <img src={loader} alt="loader" /> : "Update"}
           </button>
         </form>
-        <button type="button">Delete account</button>
+        <button type="button" onClick={handleDeleteProfile}>
+          Delete account
+        </button>
       </Container>
     </ProfileLayout>
   );
