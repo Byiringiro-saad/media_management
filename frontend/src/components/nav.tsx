@@ -1,12 +1,19 @@
 import { FC } from "react";
 import styled from "styled-components";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 //icons
 import { AiOutlineLogin } from "react-icons/ai";
 
 const Nav: FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  //logout
+  const handleLogout = () => {
+    sessionStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <Container>
@@ -28,7 +35,7 @@ const Nav: FC = () => {
       >
         Profile
       </Link>
-      <div className="logout">
+      <div className="logout" onClick={handleLogout}>
         <AiOutlineLogin className="icon" />
       </div>
     </Container>
