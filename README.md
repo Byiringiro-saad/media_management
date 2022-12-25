@@ -1,7 +1,7 @@
 # media_management
 A simple media management platform
 
-### What inside
+### What's inside
 This repo contains two folder:
 1. Backend: server logic of the platform
 2. Frontend: client logic of the platform
