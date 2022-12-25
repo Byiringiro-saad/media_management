@@ -9,6 +9,8 @@ import { BiChevronsUp } from "react-icons/bi";
 
 //files
 import { Media as MInterface } from "../../features/interfaces";
+import axiosInstance from "../../features/axios";
+import { toast } from "react-toastify";
 
 type Props = {
   media: MInterface;
@@ -35,8 +37,33 @@ const Media: React.FC<Props> = ({ media }) => {
     navigate(`/home/${media?._id}`);
   };
 
+  const upvote = () => {
+    axiosInstance
+      .put(
+        `/medias/upvote/${media?._id}`,
+        {},
+        { headers: { Authorization: sessionStorage.getItem("token") } }
+      )
+      .then((res) => {
+        toast(`${res.data.message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          theme: "dark",
+        });
+      })
+      .catch((err) => {
+        toast(`${err.response.data.message}`, {
+          position: "top-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          theme: "dark",
+        });
+      });
+  };
+
   return (
-    <Container onClick={goToMedia}>
+    <Container>
       <div className="media">
         <motion.div
           className="hover"
@@ -44,17 +71,18 @@ const Media: React.FC<Props> = ({ media }) => {
           initial="hidden"
           whileHover="visible"
         >
-          <div className="one">
+          <div className="one" onClick={upvote}>
             <BiChevronsUp className="icon" />
           </div>
           <div className="one">
             <HiDownload className="icon" />
           </div>
+          <div className="background" onClick={goToMedia}></div>
         </motion.div>
         <div className="upvotes">
           <p>{media?.upvotes?.length} Upvotes</p>
         </div>
-        <img src={media?.url} alt="media" />
+        <img src={media?.url} alt="media" onClick={goToMedia} />
       </div>
       <div className="title">
         <p>{media?.title}</p>
@@ -92,7 +120,17 @@ const Container = styled.div`
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #070b1087;
+
+      .background {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+        z-index: -10;
+        background: #070b1087;
+      }
 
       .one {
         width: 50px;

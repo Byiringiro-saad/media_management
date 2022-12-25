@@ -212,7 +212,7 @@ class MediaController {
         this.upvoteMedia = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const data = {
                 id: req.params.id,
-                user: req.body.user,
+                user: req.user,
             };
             try {
                 const media = yield media_model_1.default.findById(data.id);
@@ -280,7 +280,7 @@ class MediaController {
         this.router.get(`${this.path}/private`, auth_middleware_1.default, this.getPrivateMedias);
         this.router.put(`${this.path}/:id`, this.updateMedia);
         this.router.delete(`${this.path}/:id`, this.deleteMedia);
-        this.router.put(`${this.path}/upvote/:id`, this.upvoteMedia);
+        this.router.put(`${this.path}/upvote/:id`, auth_middleware_1.default, this.upvoteMedia);
         this.router.put(`${this.path}/public/:id`, this.turnIntoPublic);
         this.router.put(`${this.path}/private/:id`, this.turnIntoPrivate);
     }

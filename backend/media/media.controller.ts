@@ -43,7 +43,11 @@ class MediaController implements Controller {
     );
     this.router.put(`${this.path}/:id`, this.updateMedia);
     this.router.delete(`${this.path}/:id`, this.deleteMedia);
-    this.router.put(`${this.path}/upvote/:id`, this.upvoteMedia);
+    this.router.put(
+      `${this.path}/upvote/:id`,
+      authMiddleware,
+      this.upvoteMedia
+    );
     this.router.put(`${this.path}/public/:id`, this.turnIntoPublic);
     this.router.put(`${this.path}/private/:id`, this.turnIntoPrivate);
   }
@@ -289,10 +293,10 @@ class MediaController implements Controller {
   };
 
   //upvote media
-  private upvoteMedia = async (req: Request, res: Response) => {
+  private upvoteMedia = async (req: UserRequest, res: Response) => {
     const data = {
       id: req.params.id,
-      user: req.body.user,
+      user: req.user,
     };
 
     try {
