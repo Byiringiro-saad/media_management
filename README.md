@@ -24,5 +24,5 @@ npm run server
 ```
 
 ### Additionals
-This platform was fully done by <a href="https://github.com/Byiringiro-saad">Byiringiro saad</a> AKA Me <br>
-I have also desinged this in figma you can check <a href="https://www.figma.com/file/JqYqv35Dfkum5MFrlEdKQ1/Media_management?node-id=0%3A1&t=YGmlSpHZQYKco1kv-1">here</a>
+This platform was fully done by <a target="_blank" href="https://github.com/Byiringiro-saad">Byiringiro saad</a> AKA Me <br>
+I have also desinged this in figma you can check <a target="_blank" href="https://www.figma.com/file/JqYqv35Dfkum5MFrlEdKQ1/Media_management?node-id=0%3A1&t=YGmlSpHZQYKco1kv-1">here</a>
