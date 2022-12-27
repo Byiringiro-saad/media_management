@@ -39,7 +39,11 @@ const Media: React.FC = () => {
           <h2>{data?.media?.title}</h2>
         </div>
         <div className="media">
-          <img src={data?.media?.url} alt="media" />
+          {data?.media?.type?.includes("image") ? (
+            <img src={data?.media?.url} alt="media" />
+          ) : (
+            <video src={data?.media?.url} autoPlay></video>
+          )}
         </div>
         <div className="actions">
           <div className="one">

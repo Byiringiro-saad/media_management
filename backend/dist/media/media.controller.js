@@ -34,7 +34,6 @@ class MediaController {
                 type: req.body.type,
                 user: req.user,
             };
-            console.log(data);
             try {
                 //check user
                 const user = yield user_model_1.default.findById(data.user);
@@ -58,7 +57,7 @@ class MediaController {
             }
             catch (error) {
                 res.status(500).json({
-                    message: "Something went wrong!",
+                    message: error.message || "Something went wrong!",
                     error: error,
                 });
             }
@@ -264,7 +263,12 @@ class MediaController {
         const storage = multer_1.default.diskStorage({});
         const fileFilter = (_req, file, cb) => {
             let ext = path_1.default.extname(file.originalname);
-            if (ext !== ".jpg" && ext !== ".jpeg" && ext !== ".png") {
+            if (ext !== ".png" &&
+                ext !== ".jpg" &&
+                ext !== ".gif" &&
+                ext !== ".jpeg" &&
+                ext !== ".mp4" &&
+                ext !== ".mov") {
                 cb(new Error("Unsupported file type!"), false);
                 return;
             }

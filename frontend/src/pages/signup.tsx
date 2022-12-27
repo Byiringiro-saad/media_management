@@ -198,7 +198,7 @@ const Signup: FC = () => {
               {loading ? <img src={loader} alt="loader" /> : "Signup"}
             </button>
           </div>
-          <div className="row" onClick={handleGoogle}>
+          <div className="row google" onClick={handleGoogle}>
             <FcGoogle className="big" />
             <p>Signup with Google</p>
           </div>
@@ -234,6 +234,10 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    .google {
+      cursor: pointer;
+    }
 
     .row {
       width: 350px;

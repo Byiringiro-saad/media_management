@@ -66,7 +66,14 @@ class MediaController implements Controller {
     const storage = multer.diskStorage({});
     const fileFilter = (_req: any, file: any, cb: any) => {
       let ext = path.extname(file.originalname);
-      if (ext !== ".jpg" && ext !== ".jpeg" && ext !== ".png") {
+      if (
+        ext !== ".png" &&
+        ext !== ".jpg" &&
+        ext !== ".gif" &&
+        ext !== ".jpeg" &&
+        ext !== ".mp4" &&
+        ext !== ".mov"
+      ) {
         cb(new Error("Unsupported file type!"), false);
         return;
       }
@@ -84,8 +91,6 @@ class MediaController implements Controller {
       type: req.body.type,
       user: req.user,
     };
-
-    console.log(data);
 
     try {
       //check user
@@ -115,9 +120,9 @@ class MediaController implements Controller {
 
       // send response
       res.status(201).json({ message: "Media created!", media: newMedia });
-    } catch (error) {
+    } catch (error: Error | any) {
       res.status(500).json({
-        message: "Something went wrong!",
+        message: error.message || "Something went wrong!",
         error: error,
       });
     }

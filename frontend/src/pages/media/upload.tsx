@@ -86,7 +86,13 @@ const Upload: FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="image" {...getRootProps()}>
           {!isEmptyObject(file) ? (
-            <img src={URL.createObjectURL(file)} alt="media" />
+            <>
+              {file.type.includes("image") ? (
+                <img src={URL.createObjectURL(file)} alt={file?.name} />
+              ) : (
+                <video src={URL.createObjectURL(file)} controls></video>
+              )}
+            </>
           ) : (
             <>
               <input {...getInputProps()} />
@@ -167,7 +173,8 @@ const Container = styled.div`
       justify-content: center;
       cursor: pointer;
 
-      img {
+      img,
+      video {
         width: 50%;
         height: 90%;
         object-fit: cover;

@@ -82,7 +82,11 @@ const Media: React.FC<Props> = ({ media }) => {
         <div className="upvotes">
           <p>{media?.upvotes?.length} Upvotes</p>
         </div>
-        <img src={media?.url} alt="media" onClick={goToMedia} />
+        {media?.type?.includes("image") ? (
+          <img src={media?.url} alt="media" onClick={goToMedia} />
+        ) : (
+          <video src={media?.url} autoPlay></video>
+        )}
       </div>
       <div className="title">
         <p>{media?.title}</p>
@@ -170,7 +174,8 @@ const Container = styled.div`
       }
     }
 
-    img {
+    img,
+    video {
       width: 100%;
       height: 100%;
       object-fit: cover;
