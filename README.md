@@ -1,6 +1,5 @@
 # media_management
-![logo](https://user-images.githubusercontent.com/61246755/209618036-f3bdd191-3f34-4a6d-9fe8-878e18559a3f.jpg)
-SaadMedius
+<b>SaadMedius</b>
 
 ### What's inside
 This repo contains two folder:
