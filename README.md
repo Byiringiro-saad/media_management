@@ -1,5 +1,5 @@
-# media_management
-<b>SaadMedius</b>
+# SaadMedius
+A Medias Management Platform
 
 ### What's inside
 This repo contains two folder:
