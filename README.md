@@ -1,5 +1,6 @@
 # media_management
-A simple media management platform
+![logo](https://user-images.githubusercontent.com/61246755/209618036-f3bdd191-3f34-4a6d-9fe8-878e18559a3f.jpg)
+SaadMedius
 
 ### What's inside
 This repo contains two folder:
@@ -24,5 +25,5 @@ npm run server
 ```
 
 ### Additionals
-This platform was developed by <a target="_blank" href="https://github.com/Byiringiro-saad">Byiringiro saad</a> AKA Me <br>
+This platform was developed by <a target="_blank" href="https://github.com/Byiringiro-saad">Byiringiro saad</a> aka Me😊 <br>
 I have also desinged this in figma you can check <a target="_blank" href="https://www.figma.com/file/JqYqv35Dfkum5MFrlEdKQ1/Media_management?node-id=0%3A1&t=YGmlSpHZQYKco1kv-1">here</a>
